@@ -15,6 +15,9 @@
     body {
       padding: 1em;
     }
+    [type='radio']{
+      display: none;
+    }
   </style>
 
   <script src="https://unpkg.com/vue@next"></script>
@@ -35,7 +38,7 @@
   <div id="app">
 
     <p>
-      站點名稱搜尋: <input type="text">
+      站點名稱搜尋: <input type="text" v-model="keyinResult">
     </p>
 
     <table class="table table-striped">
@@ -45,18 +48,36 @@
           <th>場站名稱</th>
           <th>場站區域</th>
           <th>目前可用車輛
-            <i class="fa fa-sort-asc" aria-hidden="true"></i>
-            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+            <label class="fa fa-sort-asc" aria-hidden="true" >
+               <input type="radio"
+                v-model="sbiSortType" value="asc">
+            </label>
+            <label class="fa fa-sort-desc" aria-hidden="true" >
+              <input type="radio"
+                v-model="sbiSortType" value="desc">
+            </label>
           </th>
           <th>總停車格
-            <i class="fa fa-sort-asc" aria-hidden="true"></i>
-            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+            <label class="fa fa-sort-asc" aria-hidden="true">
+              <input type="radio" v-model="totSortType" value="asc">
+            </label>
+            <label class="fa fa-sort-desc" aria-hidden="true">
+              <input type="radio" v-model="totSortType" value="desc">
+            </label>
           </th>
           <th>資料更新時間</th>
         </tr>
       </thead>
       <tbody>
         <!-- 請補完 -->
+        <tr v-for="(item, index) in ubikeSearch ">
+          <td>{{item.sno}}</td>
+          <td>{{item.sna}}</td>
+          <td>{{item.sarea}}</td>
+          <td>{{item.sbi}}</td>
+          <td>{{item.tot}}</td>
+          <td>{{item.mday }}</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -76,7 +97,10 @@
     const app = Vue.createApp({
       data () {
         return {
-          uBikeStops: []
+          uBikeStops: [],
+          keyinResult: "",
+          sbiSortType: "",
+          totSortType: "",
         }
       },
       created () {
@@ -86,6 +110,44 @@
               const stops = Object.keys(json.retVal).map(key => json.retVal[key]);
               this.uBikeStops = stops;
             });
+      },
+      computed: {
+        ubikeSearch(){
+          if(this.keyinResult){
+            return this.uBikeStops.filter((x) => x.sna.indexOf(this.keyinResult) > -1);
+          }
+          return this.uBikeStops
+        },
+        ubikeSort() {
+          if( this.sbiSortType === 'asc' ) {
+            return this.keyinResult.sort((a, b) => a.sbi - b.sbi );
+            }
+          else if( this.sbiSortType === 'desc' ) {
+            return this.keyinResult.sort((a, b) => b.sbi - a.sbi);
+            }
+          else {
+            return this.keyinResult;
+          }
+        }
+      },
+      watch:{
+        sbiSortType(val){
+          if( this.sbiSortType === 'asc' ) {
+            ubikeSearch = this.ubikeSearch.sort((a, b) => a.sbi - b.sbi );
+            }
+          else if( this.sbiSortType === 'desc' ) {
+            ubikeSearch = this.ubikeSearch.sort((a, b) => b.sbi - a.sbi);
+            }
+        },
+        totSortType(val){
+          if( this.totSortType === 'asc' ) {
+          ubikeSearch = this.ubikeSearch.sort((a, b) => a.tot - b.tot );
+          }
+          else if( this.totSortType === 'desc' ) {
+          ubikeSearch = this.ubikeSearch.sort((a, b) => b.tot - a.tot);
+          }
+        }
+
       }
     }).mount('#app');
   </script>
