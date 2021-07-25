@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>練習 13： YouBike 臺北市公共自行車即時資訊</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+    integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    body {
+      padding: 1em;
+    }
+  </style>
+
+  <script src="https://unpkg.com/vue@next"></script>
+
+</head>
+
+<body>
+  <p>
+    練習 13： YouBike 臺北市公共自行車即時資訊 <br>
+    完成下列表格，並加入:
+    1. 站點名稱搜尋
+    2. 目前可用車輛 / 總停車格 的排序功能
+  </p>
+
+  <hr>
+
+  <div id="app">
+
+    <p>
+      站點名稱搜尋: <input type="text">
+    </p>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>場站名稱</th>
+          <th>場站區域</th>
+          <th>目前可用車輛
+            <i class="fa fa-sort-asc" aria-hidden="true"></i>
+            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+          </th>
+          <th>總停車格
+            <i class="fa fa-sort-asc" aria-hidden="true"></i>
+            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+          </th>
+          <th>資料更新時間</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 請補完 -->
+      </tbody>
+    </table>
+  </div>
+
+
+  <script>
+
+    // 欄位說明請參照:
+    // http://data.taipei/opendata/datalist/datasetMeta?oid=8ef1626a-892a-4218-8344-f7ac46e1aa48
+    // 半成品參考: https://kuro.tw/vue-ubike-information/
+
+    // sno：站點代號、 sna：場站名稱(中文)、 tot：場站總停車格、
+    // sbi：場站目前車輛數量、 sarea：場站區域(中文)、 mday：資料更新時間、
+    // lat：緯度、 lng：經度、 ar：地(中文)、 sareaen：場站區域(英文)、
+    // snaen：場站名稱(英文)、 aren：地址(英文)、 bemp：空位數量、 act：全站禁用狀態
+
+    const app = Vue.createApp({
+      data () {
+        return {
+          uBikeStops: []
+        }
+      },
+      created () {
+        fetch('https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.gz')
+            .then(res => res.json())
+            .then(json => {
+              const stops = Object.keys(json.retVal).map(key => json.retVal[key]);
+              this.uBikeStops = stops;
+            });
+      }
+    }).mount('#app');
+  </script>
+
+</body>
+
+</html>
