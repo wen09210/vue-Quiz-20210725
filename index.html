@@ -15,7 +15,8 @@
     body {
       padding: 1em;
     }
-    [type='radio']{
+
+    [type='radio'] {
       display: none;
     }
   </style>
@@ -48,13 +49,11 @@
           <th>場站名稱</th>
           <th>場站區域</th>
           <th>目前可用車輛
-            <label class="fa fa-sort-asc" aria-hidden="true" >
-               <input type="radio"
-                v-model="sbiSortType" value="asc">
+            <label class="fa fa-sort-asc" aria-hidden="true">
+              <input type="radio" v-model="sbiSortType" value="asc">
             </label>
-            <label class="fa fa-sort-desc" aria-hidden="true" >
-              <input type="radio"
-                v-model="sbiSortType" value="desc">
+            <label class="fa fa-sort-desc" aria-hidden="true">
+              <input type="radio" v-model="sbiSortType" value="desc">
             </label>
           </th>
           <th>總停車格
@@ -84,7 +83,6 @@
 
 
   <script>
-
     // 欄位說明請參照:
     // http://data.taipei/opendata/datalist/datasetMeta?oid=8ef1626a-892a-4218-8344-f7ac46e1aa48
     // 半成品參考: https://kuro.tw/vue-ubike-information/
@@ -95,56 +93,45 @@
     // snaen：場站名稱(英文)、 aren：地址(英文)、 bemp：空位數量、 act：全站禁用狀態
 
     const app = Vue.createApp({
-      data () {
+      data() {
         return {
           uBikeStops: [],
-          keyinResult: "",
+          keyinResult: [],
           sbiSortType: "",
           totSortType: "",
         }
       },
-      created () {
+      created() {
         fetch('https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.gz')
-            .then(res => res.json())
-            .then(json => {
-              const stops = Object.keys(json.retVal).map(key => json.retVal[key]);
-              this.uBikeStops = stops;
-            });
+          .then(res => res.json())
+          .then(json => {
+            const stops = Object.keys(json.retVal).map(key => json.retVal[key]);
+            this.uBikeStops = stops;
+          });
       },
       computed: {
-        ubikeSearch(){
-          if(this.keyinResult){
+        ubikeSearch() {
+          if (this.keyinResult) {
             return this.uBikeStops.filter((x) => x.sna.indexOf(this.keyinResult) > -1);
           }
           return this.uBikeStops
         },
-        ubikeSort() {
-          if( this.sbiSortType === 'asc' ) {
-            return this.keyinResult.sort((a, b) => a.sbi - b.sbi );
-            }
-          else if( this.sbiSortType === 'desc' ) {
-            return this.keyinResult.sort((a, b) => b.sbi - a.sbi);
-            }
-          else {
-            return this.keyinResult;
-          }
-        }
       },
-      watch:{
-        sbiSortType(val){
-          if( this.sbiSortType === 'asc' ) {
-            ubikeSearch = this.ubikeSearch.sort((a, b) => a.sbi - b.sbi );
-            }
-          else if( this.sbiSortType === 'desc' ) {
+      watch: {
+        sbiSortType(val) {
+          let ubikeSearch;
+          if (this.sbiSortType === 'asc') {
+            ubikeSearch = this.ubikeSearch.sort((a, b) => a.sbi - b.sbi);
+          } else if (this.sbiSortType === 'desc') {
             ubikeSearch = this.ubikeSearch.sort((a, b) => b.sbi - a.sbi);
-            }
-        },
-        totSortType(val){
-          if( this.totSortType === 'asc' ) {
-          ubikeSearch = this.ubikeSearch.sort((a, b) => a.tot - b.tot );
           }
-          else if( this.totSortType === 'desc' ) {
-          ubikeSearch = this.ubikeSearch.sort((a, b) => b.tot - a.tot);
+        },
+        totSortType(val) {
+          let ubikeSearch;
+          if (this.totSortType === 'asc') {
+            ubikeSearch = this.ubikeSearch.sort((a, b) => a.tot - b.tot);
+          } else if (this.totSortType === 'desc') {
+            ubikeSearch = this.ubikeSearch.sort((a, b) => b.tot - a.tot);
           }
         }
 
